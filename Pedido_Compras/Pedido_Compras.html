@@ -1,0 +1,792 @@
+<html>
+
+<head>
+	<link type="text/css" rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css" />
+	<script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
+	<script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
+	<script type="text/javascript" src="/style-guide/js/fluig-style-guide.min.js" charset="utf-8"></script>
+	<script type="text/javascript" src="/webdesk/vcXMLRPC.js"></script>
+
+	<link href="select2.min.css" rel="stylesheet" />
+	<script src="select2.min.js"></script>
+	<script type="text/javascript" src="moment.min.js" charset="utf-8"></script>
+	<script src="jquery.mask.min.js"></script>
+	<script src="jquery.maskMoney.min.js"></script>
+
+	<script type="text/javascript" src="jquery.fileupload.js"></script>
+	<script type="text/javascript" src="upload_file_rest.js"></script>
+	<link type="text/css" rel="stylesheet" href="upload_file_rest.css" />
+
+	<script type="text/javascript" src="actions.js"></script>
+	<script type="text/javascript" src="validate.js"></script>
+	<script type="text/javascript" src="integracoes.js"></script>
+	<script type="text/javascript" src="controller.js"></script>
+	<script type="text/javascript" src="inputmask.js"></script>
+	<link type="text/css" rel="stylesheet" href="style.css" />
+
+</head>
+
+<body>
+	<div class="fluig-style-guide">
+		<form name="form" role="form" id="form_pedido_compras">
+			<div class="panel panel-primary" id="Pedido_Compras">
+				<div class="panel-heading">
+					<strong class="panel-title"> <i aria-hidden="true"></i>Pedido de Compras</strong>
+				</div>
+				<div class="panel-body">
+					<input type="hidden" name="numSolicitacao" id="numSolicitacao">
+					<input type="hidden" name="codUsuario" id="codUsuario">
+					<input type="hidden" name="idUserProtheus" id="idUserProtheus">
+					<input type="hidden" name="numAtividade" id="numAtividade">
+					<input type="hidden" name="idDocForm" id="idDocForm">
+					<input type="hidden" name="numAtividadeAtual" id="numAtividadeAtual">
+					<input type="hidden" name="descAtividadeAtual" id="descAtividadeAtual">
+					<input type="hidden" name="statusSolicitacao" id="statusSolicitacao">
+					<input type="hidden" name="tipoIntegracao" id="tipoIntegracao" value="EVENTO_FORMULARIO">
+					<input type="hidden" name="existeUserProtheus" id="existeUserProtheus">
+					<div class="row">
+						<div class="form-group col-md-3">
+							<label for="empresa">Nome da Empresa</label><br>
+							<select name="empresa" id="empresa" class="js-example-basic-single form-control"
+								onchange="getFiliais(this.value),validaEdicao(this.id,'select')"></select>
+							<input type="hidden" class="form-control" name="empresaTXT" id="empresaTXT">
+							<input type="hidden" class="form-control" name="empresaOBJ" id="empresaOBJ">
+							<!--Puxar direto do banco-->
+						</div>
+						<div class="form-group col-md-6" style="display:none;">
+							<label for="filial">Filial</label><br>
+							<select name="filial" id="filial" class="form-control"
+								onchange="alteraTXT(this.id),validaEdicao(this.id,'select')"></select>
+							<input type="hidden" class="form-control" name="filialTXT" id="filialTXT">
+							<input type="hidden" class="form-control" name="filialOBJ" id="filialOBJ">
+							<!--Puxar direto do banco-->
+						</div>
+						<div class="form-group col-md-3">
+							<label for="numSC">Nº Pedido de Compras</label>
+							<input type="number" name="numPC" id="numPC" class="form-control" readonly>
+							<input type="hidden" name="numPCEmp" id="numPCEmp" class="form-control" readonly>
+							<input type="hidden" name="codTimeStamp" id="codTimeStamp" class="form-control" readonly>
+							<input type="hidden" name="numSC" id="numSC" class="form-control" readonly>
+							<input type="hidden" name="numSCEmp" id="numSCEmp" class="form-control" readonly>
+							<input type="hidden" name="numFluigSC" id="numFluigSC" class="form-control" readonly>
+							<input type="hidden" name="codTimeStampSC" id="codTimeStampSC" class="form-control" readonly>
+							
+							<input type="hidden" name="documentIdSC"				id="motivoEscolhaCotacaoRegSC" class="form-control">
+							<input type="hidden" name="versionSC"					id="dataAtiv12RegSC" class="form-control">
+							<input type="hidden" name="empresaTXTReg"				id="nomeRespAtiv12RegSC" class="form-control">
+							<input type="hidden" name="solicitanteRegSC"			id="solicitanteRegSC" class="form-control">
+							<input type="hidden" name="nomeRespAtiv12RegSC"			id="empresaTXTReg"  class="form-control">	
+							<input type="hidden" name="dataAtiv12RegSC"				id="versionSC"	 class="form-control">
+							<input type="hidden" name="motivoEscolhaCotacaoRegSC"	id="documentIdSC" class="form-control">	
+							<!--Puxar direto do banco-->
+						</div>
+						<div class="form-group col-md-3" id="div_dt_emissao">
+							<label for="dt_emissao">Data de Emissão</label>
+							<input type="text" name="dt_emissao" id="dt_emissao" class="form-control" readonly>
+							<input type="hidden" name="dataEmissaoFormatada" id="dataEmissaoFormatada"
+								class="form-control" readonly>
+							<!--Puxar direto da data atual em que se abriu a SC-->
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-3">
+							<label for="solicitante">Solicitante</label><br>
+							<input type="text" name="solicitante" id="solicitante" class="form-control" readonly>
+							<input type="hidden" name="codSolicitante" id="codSolicitante" class="form-control">
+							<!--Puxar direto da criação da SC-->
+						</div>
+						<div class="form-group col-md-3">
+							<label for="Fonrnecedor">Comprador</label>
+							<input type="text" name="nomeComprador" id="nomeComprador" class="form-control" readonly>
+							<input type="hidden" name="codComprador" id="codComprador" class="form-control" readonly>
+						</div>
+					</div>
+					<div class="row" id="msgStatusPedidoNegado" style="display:none;">
+						<div class="alert alert-danger" role="alert">
+							Atenção! Pedido de Compras foi reprovado!
+						</div>
+					</div>
+					<div class="row" id="msgStatusPedidoPendente" style="display:none;">
+						<div class="alert alert-warning" role="alert">
+							Atenção! Pedido de Compras pendente aprovação!
+						</div>
+					</div>
+					<div class="row" id="msgStatusPedidoAprovado" style="display:none;">
+						<div class="alert alert-success" role="alert">
+							Atenção! Pedido de Compras aprovado!
+						</div>
+					</div>
+					
+					<div class="panel-group collapse-cerise" id="accordion-variant-colors">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h4 class="panel-title">
+									<a class="collapse-icon up" data-toggle="collapse" data-parent="#accordion-variant-colors" href="#collapseOne-variant">
+									Reprocessar Pedido de Compras
+									</a>
+								</h4>
+							</div>
+							<div id="collapseOne-variant" class="panel-collapse collapse in">
+								<div class="panel-body">
+									<p>Orientações para reprocessar pedido de compras:</p>
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-group col-md-3">
+												<label for="empresaSC">Nome da Empresa</label><br>
+												<select name="empresaSC" id="empresaSC" class="js-example-basic-single form-control"></select>
+												<input type="hidden" class="form-control" name="empresaSCTXT" id="empresaSCTXT">
+												<input type="hidden" class="form-control" name="empresaSCOBJ" id="empresaSCOBJ">
+											</div>
+											<div class="form-group col-md-2">
+												<label for="numREPSC">Nº Solicitação Compras</label><br>
+												<input type="text" class="form-control" name="numREPSC" id="numREPSC">
+											</div>
+											<div class="form-group col-md-2">
+												<br>
+												<button type="button" class="btn btn-primary" id="btnBuscaPedidosSC" onclick="buscaPedidosSC()">Buscar</button>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-10" id="divPedidosSC" style="margin-top:20px;">
+											<table class="table table-bordered" id="tbPedidosSC" tablename="tbPedidosSC" noaddbutton="true">
+											<thead>
+												<tr>
+													<th class="align-middle custom-th" style="width:12%;border-top: 1px solid #CCC !important">Nº Pedido</th>
+													<th class="align-middle custom-th" style="width:50%;border-top: 1px solid #CCC !important">Razão Social</th>
+													<th class="align-middle custom-th" style="width:12%;border-top: 1px solid #CCC !important">Status Pedido</th>
+													<th class="align-middle custom-th" style="width:12%;border-top: 1px solid #CCC !important">Ação</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td >
+														<input type="hidden" class="exclude" name="excludetbPedidosSC" id="excludetbPedidosSC">
+														<input type="hidden" class="exclude" name="codEmpPedidoSC" id="codEmpPedidoSC">
+														<input type="hidden" class="exclude" name="cnpjPedidoSC" id="cnpjPedidoSC">
+														<input type="hidden" class="exclude" name="fluigPedidoSC" id="fluigPedidoSC">
+														<input type="text" class="form-control" name="numPedidoSC" id="numPedidoSC" style="background-color: #FFF;color:#363637;font-size:12px;text-align:center;font-weight:bold" readonly>
+													</td>
+													<td >
+														<input type="text" class="form-control" name="razaoPCSC" id="razaoPCSC" style="background-color: #FFF;color:#363637;font-size:12px;text-align:left;font-weight:bold" readonly>
+													</td>
+													<td >
+														<input type="text" class="form-control" name="statusPCSC" id="statusPCSC" style="background-color: #FFF;color:#363637;font-size:12px;text-align:center;font-weight:bold" readonly>
+													</td>
+													<td class="thAcoestbPedidosSC">
+														<div id="DIVbtntbPedidosSC" style="text-align:center;"></div>
+														<input type="hidden" class="form-control" name="acoestbPedidosSC" id="acoestbPedidosSC">
+													</td>
+												</tr>
+											</tbody>
+										</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					
+					
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><i class="fluigicon fluigicon-community-selection icon-md"
+							aria-hidden="true"></i>&nbsp;&nbsp;Dados Fornecedor</h3>
+						</div>
+						<div class="panel-body">
+							<div class="row">
+								<div class="form-group col-sm-2">
+									<label id="lb_filtroEmpresa">Filtro Pesquisa</label>
+									<select class="form-control" name="filtroEmpresa" id="filtroEmpresa" onchange="alteraTXT(this.id)">
+										<option value="DESCRICAO">Razão Social</option>
+										<option value="CNPJ">CNPJ</option>
+									</select>
+
+									<input type="hidden" name="filtroEmpresaTXT" id="filtroEmpresaTXT" value="DESCRICAO">
+								</div>
+								<div class="form-group col-md-5">
+									<label id="lb_razaoSocialTEMP">Razão Social/CNPJ</label>
+									<select class="js-example-basic-single form-control" name="razaoSocial" id="razaoSocial"></select>
+									<input type="hidden" name="razaoSocialOBJ" id="razaoSocialOBJ" class="form-control" readonly>
+								</div>
+								<div class="form-group col-md-3">
+									<label for="cnpj">CNPJ</label>
+									<input type="text" name="cnpj" id="cnpj" class="form-control" mask="00.000.000/0000-00" readonly>
+									<input type="hidden" name="loja" id="loja" class="form-control" readonly>
+									<input type="hidden" name="codFornec" id="codFornec" class="form-control" readonly>
+								</div>
+								<div class="form-group col-md-2">
+									<label for="cep">CEP</label>
+									<input type="text" name="cep" id="cep" class="form-control" mask="00000-000"
+										readonly>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-2">
+									<label for="estado">Estado</label>
+									<input type="text" name="estado" id="estado" class="form-control" readonly>
+								</div>
+								<div class="form-group col-md-2">
+									<label for="cidade">Cidade</label>
+									<input type="text" name="cidade" id="cidade" class="form-control" readonly>
+								</div>
+								<div class="form-group col-md-2">
+									<label for="bairro">Bairro</label>
+									<input type="text" name="bairro" id="bairro" class="form-control" readonly>
+								</div>
+								<div class="form-group col-md-4">
+									<label for="endereco">Logradouro</label>
+									<input type="text" name="endereco" id="endereco" class="form-control" readonly>
+								</div>
+								<div class="form-group col-md-2">
+									<label for="complemento">Complemento</label>
+									<input type="text" name="complemento" id="complemento" class="form-control"
+										readonly>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-4">
+									<label>Contato</label>
+									<input type="text" name="contato" id="contato" class="form-control"
+										onchange="validaEdicao(this.id,'text')">
+								</div>
+								<div class="form-group col-md-4">
+									<label for="emailFornec">E-mail</label>
+									<input type="text" name="emailFornec" id="emailFornec" class="form-control"
+										onchange="validaEdicao(this.id,'email')">
+								</div>
+								<div class="form-group col-md-4">
+									<label for="telefoneFornec">Telefone</label>
+									<input type="text" name="telefoneFornec" id="telefoneFornec" class="form-control" mask="(00) 00000-0000" onchange="validaEdicao(this.id,'text')">
+									<input type="hidden" name="numLinhaFornecedor" id="numLinhaFornecedor">
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!--====================================================================================
+														INSERÇÃO DE PRODUTOS
+					========================================================================================-->
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><i class="flaticon flaticon-product icon-md" aria-hidden="true"></i>
+							&nbsp;&nbsp;Inserção de Produtos</h3>
+						</div>
+						<div class="panel-body">
+							<div class="row divTempProdutos">
+								<div class="form-group col-md-4">
+									<label id="lb_produtoTemp">Produto</label>&nbsp;&nbsp;&nbsp;&nbsp;
+									<a href="javascript:void(0)" onclick="limpaSelect2('produtoTemp')" id="limpar_produtoTemp">
+										<span style="font-size: 13px;text-decoration: underline;color: #df3159;font-weight: bold;" id="clean_produtoTemp">Limpar</span>
+									</a>
+									<a href="javascript:void(0)" onclick="recarregaProdutoTemp('produtoTemp')" id="trocar_produtoTemp" style="display:none;">
+										<span style="font-size: 13px;text-decoration: underline;color: #0784df;font-weight: bold;" id="alter_produtoTemp">Alterar</span>
+									</a>
+									<select class="js-example-basic-single form-control" name="produtoTemp" id="produtoTemp"></select>
+									<input type="hidden" class="form-control" name="primeiroProdutoCod" id="primeiroProdutoCod">
+									<input type="hidden" class="form-control" name="primeiroProdutoTXT" id="primeiroProdutoTXT">
+									<input type="hidden" class="form-control" name="tipoProdutoTemp" 		id="tipoProdutoTemp" >
+									<input type="hidden" class="form-control" name="contaContabProdTemp" 	id="contaContabProdTemp" >
+									<input type="hidden" class="form-control" name="itemContaProdTemp" 		id="itemContaProdTemp" >
+								</div>
+								<div class="form-group col-md-4">
+									<label id="lb_centroCustoTemp">Centro de Custos</label>&nbsp;&nbsp;&nbsp;&nbsp;
+									<a href="javascript:void(0)" onclick="limpaSelect2('centroCustoTemp')"
+										id="limpar_centroCustoTemp">
+										<span
+											style="font-size: 13px;text-decoration: underline;color: #df3159;font-weight: bold;"
+											id="clean_centroCustoTemp">Limpar</span>
+									</a>
+									<a href="javascript:void(0)"
+										onclick="recarregaCentroCustoTemp('centroCustoTemp')"
+										id="trocar_centroCustoTemp" style="display:none;">
+										<span
+											style="font-size: 13px;text-decoration: underline;color: #0784df;font-weight: bold;"
+											id="alter_centroCustoTemp">Alterar</span>
+									</a>
+									<select class="js-example-basic-single form-control" name="centroCustoTemp"
+										id="centroCustoTemp">
+									</select>
+								</div>
+								<div class="form-group col-sm-2" style="display:none">
+									<label id="lb_filtroNatureza">Filtro Pesquisa</label>
+									<select class="form-control" name="filtroNatureza" id="filtroNatureza" onchange="alteraTXT(this.id)">
+										<option value="DESCRICAO">Descrição</option>
+										<option value="CODIGO">Código</option>
+									</select>
+									<input type="hidden" name="filtroNaturezaTXT" id="filtroNaturezaTXT" value="DESCRICAO">
+								</div>
+								<div class="form-group col-md-3" style="display:none">
+									<label id="lb_naturezaTemp">Natureza</label>&nbsp;&nbsp;&nbsp;&nbsp;
+									<a href="javascript:void(0)" onclick="limpaSelect2('naturezaTemp')" id="limpar_naturezaTemp">
+										<span style="font-size: 13px;text-decoration: underline;color: #df3159;font-weight: bold;" id="clean_naturezaTemp">Limpar</span>
+									</a>
+									<a href="javascript:void(0)" onclick="recarreganaturezaTemp('naturezaTemp')" id="trocar_naturezaTemp" style="display:none;">
+										<span style="font-size: 13px;text-decoration: underline;color: #0784df;font-weight: bold;" id="alter_naturezaTemp">Alterar</span>
+									</a>
+									<select class="js-example-basic-single form-control" name="naturezaTemp" id="naturezaTemp">
+									</select>
+								</div>
+								
+								<div class="form-group col-md-2" style="display:none;">
+									<label for="categoriaSC">Categoria:</label>
+									<select name="categoriaSC" id="categoriaSC" class="form-control"
+										onchange="alteraTXT(this.id),validaEdicao(this.id,'select')">
+										<option value="">Selecione</option>
+										<option value="1">Normal</option>
+										<option value="2">Licitação</option>
+										<option value="3">Regularização</option>
+										<option value="4">Urgente</option>
+										<option value="5">SLA(Indicação Técnica)</option>
+										<option value="6">Contrato</option>
+									</select>
+									<input type="hidden" class="form-control" name="categoriaSCTXT"
+										id="categoriaSCTXT">
+								</div>
+								<div class="form-group col-md-2">
+									<label>Quantidade</label>
+									<input type="text" name="quantidadeTemp" id="quantidadeTemp" class="form-control"
+										onchange="validaEdicao(this.id,'text'),formataInt(this.id)"
+										onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+								</div>
+								<div class="form-group col-md-2">
+									<label id="lb_uniMedProdutoTemp">Unidade de Medida</label>
+									<a href="javascript:void(0)" onclick="recarregaUnidMedidaTemp('uniMedProdutoTemp')" id="limpar_uniMedProdutoTemp">
+										<span style="font-size: 13px;text-decoration: underline;color: #df3159;font-weight: bold;" id="clean_uniMedProdutoTemp">Alterar</span>
+									</a>
+									<a href="javascript:void(0)" onclick="recarregaUnidMedidaTemp('uniMedProdutoTemp')" id="trocar_uniMedProdutoTemp" style="display:none;">
+										<span style="font-size: 13px;text-decoration: underline;color: #0784df;font-weight: bold;" id="alter_uniMedProdutoTemp">Alterar</span>
+									</a>
+									<select class="js-example-basic-single js-states form-control" name="uniMedProdutoTemp" id="uniMedProdutoTemp" onchange="alteraTXTOBJ(this.id)">
+										<option></option>
+									</select>
+									<input type="hidden" name="uniMedProdutoTempTXT" id="uniMedProdutoTempTXT">
+									<input type="hidden" name="uniMedProdutoTempOBJ" id="uniMedProdutoTempOBJ">
+								</div>
+							</div>
+							<div class="row divTempProdutos">
+								
+								<div class="form-group col-md-2">
+									<label>Valor Unitário</label>
+									<input type="text" name="valUnitTemp" id="valUnitTemp" class="form-control" data-thousands="." data-decimal="," data-prefix="R$ " onchange="calculaTotalItem()" >
+								</div>
+								<div class="form-group col-md-2">
+									<label>Alíquota IPI (%)</label>
+									<input type="text" name="aliqIPITemp" id="aliqIPITemp" class="form-control" data-thousands="." data-decimal="," onchange="calculaTotalItem()" >
+								</div>
+								<div class="form-group col-md-2">
+									<label>Valor IPI (R$)</label>
+									<input type="text" name="valIPITemp" id="valIPITemp" class="form-control" readonly >
+								</div>
+								<div class="form-group col-md-2">
+									<label>Total Item</label>
+									<input type="text" name="totalItemTemp" id="totalItemTemp" class="form-control" readonly>
+									<input type="hidden" name="totalBrutoItemTemp" id="totalBrutoItemTemp" class="form-control" readonly>
+								</div>
+							</div>
+							
+							<div class="row divTempProdutos">
+								<div class="form-group col-md-12">
+										<label>Informações Complementares</label>&nbsp;&nbsp;
+										<i class="flaticon flaticon-important icon-sm" aria-hidden="true" style="color: #3aa0c9;font-size: 17px;"></i>&nbsp;<span class="text-info">Descreva características como modelo, tamanho, garantia, etc. Estas informações serão encaminhadas ao fornecedor.</span>
+										<textarea class="form-control" name="infoComplProdutoTemp" id="infoComplProdutoTemp" rows="2"></textarea>
+									</div>
+								<div class="form-group col-md-12">
+									<label>Observação Item</label>&nbsp;&nbsp;<i class="flaticon flaticon-important icon-sm" aria-hidden="true"
+										style="color: #3aa0c9;font-size: 17px;"></i>&nbsp;<span
+										class="text-info">Informe a justifica e informações necessárias ao compras.
+										Exemplo: Número do chamado.</span>
+									<textarea class="form-control" name="obsPedidoTemp" id="obsPedidoTemp" rows="2" maxlength="512"></textarea>
+									<input type="hidden" name="numLinhaProdutoSC" id="numLinhaProdutoSC">
+								</div>
+							</div>
+							<div class="row" id="msgErrotbGradeProdutos" style="display:none;">
+								<div class="alert alert-danger" role="alert">
+									Atenção! Os campos em destaque são obrigatórios ou estão com informações incorretas!
+								</div>
+							</div>
+							<div class="row divTempProdutos" style="float:right">
+								<div class="form-group col-md-2">
+									<button type="button" class="btn btn-success" id="adicionaProdutoSC" onclick="addTbGradeProdutos()">Adicionar</button>
+									<button type="button" class="btn btn-success" id="salvaProdutoSC" onclick="saveTbGradeProdutos()" style="display:none;">Salvar</button>
+									<button type="button" class="btn btn-primary" id="ocultaProdutoSC" onclick="ocultaTbGradeProdutos()" style="display:none;">Ocultar</button>
+								</div>
+							</div>
+							
+							<div class="col-md-12" id="div_itens_pedido" style="padding-left:0px;padding-right:0px;">
+
+								<div class="panel panel-primary" id="Itens_Pedido">
+									<div class="panel-heading">
+										<h3 class="panel-title"> <i class="flaticon flaticon-product icon-md" aria-hidden="true"></i>Itens do pedido
+										</h3>
+									</div>
+									<div class="panel-body">
+										<!-- ==================================================================================
+																		ITENS PEDIDO
+										=======================================================================================-->
+										<div class="row pnPedido" id="divItensPedido" style="">
+											
+											<div class="col-sm-12">
+												<table class="table table-bordered" id="tbItensPedido" tablename="tbItensPedido" noaddbutton="true">
+													<thead>
+														<tr>
+															<th class="align-middle custom-th" style="vertical-align:middle;width:5%">Nº </th>
+															<th class="align-middle custom-th" style="vertical-align:middle;width:25%">Item Solicitado</th>
+															<th class="align-middle custom-th" style="vertical-align:middle;width:15%">Centro de Custos</th>
+															<th class="align-middle custom-th" style="vertical-align:middle;width:15%">Natureza</th>
+															<th class="align-middle custom-th" style="vertical-align:middle;width:10%">Qtd. Solicitada</th>
+															<th class="align-middle custom-th" style="vertical-align:middle;width:10%">Vlr. Unit.</th>
+															<th class="align-middle custom-th" style="vertical-align:middle;width:10%">Total Item</th>
+															<th class="align-middle custom-th thAcoesItensCotacao" style="width:15%;vertical-align:middle;">Ações</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td>
+																<input type="hidden" class="exclude" name="excludetbItensPedido" id="excludetbItensPedido">
+																<input type="text" class="form-control" name="numItem" id="numItem" style="padding-left: 0px;padding-right: 0px;text-align:center;background-color: #FFF;color:#363637;font-size:12px;" readonly>
+															</td>
+															<td>
+																<input type="hidden" name="numFluigItemPedido" id="numFluigItemPedido">
+																<input type="hidden" name="codItemSolicitado" id="codItemSolicitado">														
+																<input type="hidden" name="tipoProd" id="tipoProd">
+																<input type="hidden" name="uniMedProduto" id="uniMedProduto">
+																<input type="hidden" name="uniMedProdutoOBJ" id="uniMedProdutoOBJ">
+																<input type="hidden" name="contaContabProd" id="contaContabProd">
+																<input type="hidden" name="itemContaProd" id="itemContaProd">
+																
+
+																<input type="text" class="form-control" name="descItemSolicitado" id="descItemSolicitado" style="background-color: #FFF;color:#363637;font-size:12px;" readonly>
+																<textarea class="form-control" name="obsItem" id="obsItem" style="display:none;"></textarea>
+																<textarea class="form-control" name="infoComplItem" id="infoComplItem" style="display:none;"></textarea>
+															</td>
+															<td>
+																<input type="hidden" name="codCentroCusto" id="codCentroCusto">
+																<input type="text" class="form-control" name="centroCusto" id="centroCusto" style="background-color: #FFF;color:#363637;font-size:12px;text-align:center;"	readonly>
+															</td>
+															<td>
+																<input type="hidden" name="codNaturezaProd" id="codNaturezaProd">
+																<input type="text" class="form-control" name="naturezaProd" id="naturezaProd" style="background-color: #FFF;color:#363637;font-size:12px;text-align:center;"	readonly>
+															</td>															
+															<td>
+																<input type="text" class="form-control" name="qtdItem" id="qtdItem" style="background-color: #FFF;color:#363637;font-size:12px;text-align:center;"	readonly>
+															</td>
+															<td>
+																<input type="text" class="form-control" name="valUnitario" id="valUnitario" style="background-color: #FFF;color:#363637;font-size:12px;" readonly>
+																<input type="hidden" name="freteItemCTF" id="freteItemCTF">
+																<input type="hidden" name="descontoItemCTF" id="descontoItemCTF">
+																<input type="hidden" name="despesaItemCTF" id="despesaItemCTF">
+																<input type="hidden" name="icmsItemCTF" id="icmsItemCTF">
+																<input type="hidden" name="aliqIPI" id="aliqIPI">
+																<input type="hidden" name="valIPI" id="valIPI">
+																<input type="hidden" name="pisItemCTF" id="pisItemCTF">
+																<input type="hidden" name="cofinsItemCTF" id="cofinsItemCTF">
+																<input type="hidden" name="issItemCTF" id="issItemCTF">
+																<input type="hidden" name="inssItemCTF" id="inssItemCTF">
+																<input type="hidden" name="irItemCTF" id="irItemCTF">
+																<input type="hidden" name="csllItemCTF" id="csllItemCTF">
+																<input type="hidden" name="outroImpostoDescCTF" id="outroImpostoDescCTF">
+																<input type="hidden" name="outroImpostoVlrCTF" id="outroImpostoVlrCTF">
+															</td>
+															<td>
+																<input type="text" class="form-control" name="totalItem" id="totalItem" style="background-color: #FFF;color:#363637;font-size:12px;" readonly>
+																<input type="hidden" class="form-control" name="totalBrutoItem" id="totalBrutoItem" style="background-color: #FFF;color:#363637;font-size:12px;" readonly>
+															</td>
+															<td class="thAcoesItensPedido">
+																<div id="DIVbtnItensPedido" style="text-align:center;"></div>
+																<input type="hidden" class="form-control" name="acoesItensPedido" id="acoesItensPedido">
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+					
+					
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><i class="flaticon flaticon-product icon-md" aria-hidden="true"></i>
+							&nbsp;&nbsp;Dados do Pedido de Compras</h3>
+						</div>
+						<div class="panel-body">
+							<div class="row">
+								<div class="form-group col-md-3">
+									<label>Total Itens</label>
+									<input type="text" name="totalItensCTF" id="totalItensCTF" class="form-control" readonly>
+									<input type="hidden" name="totalBrutoItensCTF" id="totalBrutoItensCTF" class="form-control" readonly>
+								</div>
+								<div class="form-group col-md-3" id="divDadosPedido">
+									<label id="lb_condPagamentoCTF">Condição de pagamento</label>
+									<select class="js-example-basic-single js-states form-control" name="condPagamentoCTF" id="condPagamentoCTF" onchange="trocaValue(this.id)">
+										<option></option>
+									</select>
+									<input type="hidden" name="condPagamentoCTFTXT" id="condPagamentoCTFTXT">
+									<input type="hidden" name="condPagamentoCTFOBJ" id="condPagamentoCTFOBJ">
+								</div>
+								<div class="form-group col-md-3">
+									<label>Tipo de Pedido</label>
+									<select class="form-control" name="tipoPedidoCTF" id="tipoPedidoCTF" style="font-size:12px;" onchange="trocaValue(this.id)">
+										<option value="">Selecione</option>
+									</select>
+									<input type="hidden" name="tipoPedidoCTFTXT" id="tipoPedidoCTFTXT">
+									<input type="hidden" name="tipoPedidoCTFOBJ" id="tipoPedidoCTFOBJ">
+								</div>
+								<div class="form-group col-md-3">
+									<label id="lb_dataPrevItemCT">Prev Entrega</label>
+									<input type="text" name="dataPrevItemCT" id="dataPrevItemCT" class="form-control" style="background-color:#FFF;color: #5d5c5c;" readonly>
+								</div>
+								
+							</div>
+							<div class="row">
+								<div class="form-group col-md-3">
+									<label>Tipo de Frete</label>
+									<select class="form-control tpFreteSel" name="tipoFreteCTF" id="tipoFreteCTF" style="font-size:12px;" onchange="trocaValue(this.id)">
+										<option value="">Selecione</option>
+										<option value="C">CIF</option>
+										<option value="F">FOB</option>
+										<option value="T">Por Conta de Terceiros</option>
+										<option value="R">Por Conta do Remetente</option>
+										<option value="D">Por Conta do Destinatário</option>
+										<option value="S">Sem Frete</option>
+									</select>
+									<input type="hidden" name="tipoFreteCTFTXT" id="tipoFreteCTFTXT">
+								</div>
+								<div class="form-group col-md-2">
+									<label for="totalFrete">Valor Frete</label>
+									<input type="text" name="totalFrete" id="totalFrete" class="form-control" data-thousands="." data-decimal="," data-prefix="R$ " onchange="calculaTotalPedido()">
+								</div>
+								<div class="form-group col-md-1">
+									<label>% Frete</label>
+									<input type="text" name="aliqFrete" id="aliqFrete" class="form-control" readonly>
+								</div>
+								<div class="form-group col-md-2">
+									<label for="totalDespesa">Valor Despesas</label>
+									<input type="text" name="totalDespesa" id="totalDespesa" class="form-control" data-thousands="." data-decimal="," data-prefix="R$ " onchange="calculaTotalPedido()">
+								</div>
+								<div class="form-group col-md-1">
+									<label>% Desp.</label>
+									<input type="text" name="aliqDespesa" id="aliqDespesa" class="form-control" readonly>
+								</div>
+								<div class="form-group col-md-2">
+									<label for="totalDesconto">Valor Descontos</label>
+									<input type="text" name="totalDesconto" id="totalDesconto" class="form-control" data-thousands="." data-decimal="," data-prefix="R$ " onchange="calculaTotalPedido()">
+								</div>
+								<div class="form-group col-md-1">
+									<label>% Desc.</label>
+									<input type="text" name="aliqDesconto" id="aliqDesconto" class="form-control" readonly>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-3">
+									<label for="totalPedido">Valor total do pedido</label>
+									<input type="text" name="totalPedido" id="totalPedido" class="form-control" readonly>
+								</div>
+								
+							</div>
+							<div class="row" style="display:none">
+								<div class="form-group col-md-3">
+									<label for="qtdDiasPrevEntregaCT">Prazo de Entrega (dias corridos)</label>
+									<input type="text" name="qtdDiasPrevEntregaCT" id="qtdDiasPrevEntregaCT" class="form-control"  onkeypress="return event.charCode >= 48 && event.charCode <= 57" onchange="calculaDiasEntrega()">
+								</div>
+								
+								
+								<div class="form-group col-md-3">
+									<label for="qtdDiasPrevPagamentoCT">Prazo de Pagamento (dias corridos)</label>
+									<input type="text" name="qtdDiasPrevPagamentoCT" id="qtdDiasPrevPagamentoCT" class="form-control"  onkeypress="return event.charCode >= 48 && event.charCode <= 57" onchange="calculaDiasPagamento()">
+								</div>
+								<div class="form-group col-md-3">
+									<label for="dataPrevPagItemCT">Prev Pagamento</label>
+									<input type="text" name="dataPrevPagItemCT" id="dataPrevPagItemCT" class="form-control" style="background-color:#FFF;color: #5d5c5c;" readonly>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-3">
+									<label>Status do Pedido</label>
+									<input type="text" name="statusPedido" id="statusPedido" class="form-control" style="background-color:#FFF;color: #5d5c5c;" readonly>
+								</div>
+								<div class="form-group col-md-3">
+									<label>Data Aprovação</label>
+									<input type="text" name="dataAprovacao" id="dataAprovacao" class="form-control" style="background-color:#FFF;color: #5d5c5c;" readonly>
+								</div>
+								<div class="form-group col-md-3">
+									<label>Resp. Aprovação</label>
+									<input type="text" name="respAprovacao" id="respAprovacao" class="form-control" style="background-color:#FFF;color: #5d5c5c;" readonly>
+								</div>
+							</div>
+						</div>
+						<div class="row" id="divBtnPedidoCompras" >
+							<div class="col-sm-12">
+								<div style="text-align: center;">
+									<button class="btn btn-success" onclick="criaPedidoCompras()">Gerar Pedido de compra</button>
+								</div>
+							</div>
+							<br><br>
+							<div class="row" id="msgErroValidaCriaSC" style="display:none;">
+								<div class="alert alert-danger" role="alert">
+									Atenção! Os campos em destaque são obrigatórios ou estão com informações incorretas!
+								</div>
+							</div>
+							<div class="row" id="msgErroTbItens" style="display:none;">
+								<div class="alert alert-danger" role="alert">
+									Atenção! Necessário a inclusão de itens para o pedido de compras!
+								</div>
+							</div>
+							<div class="row" id="msgErroIntegracaoSC" style="display:none;">
+								<div class="alert alert-danger" role="alert">Atenção! Houve um erro no processamento do Pedido de Compras. Contate a TI!<br>Erro: <span id="codeErroIntegracaoSC"></span>
+								</div>
+							</div>
+							<div class="row" id="msgSucessoIntegracaoSC" style="display:none;font-size:16px;">
+								<div class="alert alert-success" role="alert">Pedido criado com sucesso de nº: <span id="codeSucessoIntegracaoSC"></span></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- ########################################################################################### 
+										PAINEL ORIENTACOES FORNECEDOR
+			################################################################################################-->
+
+			<div class="panel panel-primary" id="pn-orientacaoFornecedor">
+				<!-- <h1 class="panel-title"><strong>FILTRO DE PEDIDOS</strong></h1> -->
+				<div class="panel-heading align-items-center">
+					<strong class="panel-title"><i class="flaticon flaticon-speaker-notes icon-md" aria-hidden="true"></i>
+						Orientação Ao Fornecedor</strong>
+					<button class="minimizar" onclick="minimizarPainel(this)">-</button>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<label>Orientações de Entrega ao Fornecedor</label>
+							<textarea class="form-control" name="orientacoesEntrega" id="orientacoesEntrega" rows="3"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- ########################################################################################### 
+										PAINEL CLASSIFICAÇÃO
+			################################################################################################-->
+
+			<div class="panel panel-primary" id="pn-classificaFornecedor">
+				<!-- <h1 class="panel-title"><strong>FILTRO DE PEDIDOS</strong></h1> -->
+				<div class="panel-heading align-items-center">
+					<strong class="panel-title"><i class="flaticon flaticon-assistant icon-md" aria-hidden="true"></i>
+						Classificação Fornecedor</strong>
+					<button class="minimizar" onclick="minimizarPainel(this)">-</button>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<h3>Classificação fornecedor</h3>
+							<input type="hidden" class="form-control" name="classificacaoFornec" id="classificacaoFornec">
+							<ul class="pagination pagination-lg">
+								<li><a href="javascript:void(0)" id="class_1" onclick="ativaClassificacao('1')" >1</a></li>
+								<li><a href="javascript:void(0)" id="class_2" onclick="ativaClassificacao('2')" >2</a></li>
+								<li><a href="javascript:void(0)" id="class_3" onclick="ativaClassificacao('3')" >3</a></li>
+								<li><a href="javascript:void(0)" id="class_4" onclick="ativaClassificacao('4')" >4</a></li>
+								<li><a href="javascript:void(0)" id="class_5" onclick="ativaClassificacao('5')" >5</a></li>
+								<li><a href="javascript:void(0)" id="class_6" onclick="ativaClassificacao('6')" >6</a></li>
+								<li><a href="javascript:void(0)" id="class_7" onclick="ativaClassificacao('7')" >7</a></li>
+								<li><a href="javascript:void(0)" id="class_8" onclick="ativaClassificacao('8')" >8</a></li>
+								<li><a href="javascript:void(0)" id="class_9" onclick="ativaClassificacao('9')" >9</a></li>
+								<li><a href="javascript:void(0)" id="class_10" onclick="ativaClassificacao('10')" >10</a></li>
+							</ul>
+							<br>
+						</div>
+					</div>
+					
+					<!-- ==================================================================================
+													DOCUMENTOS COTACAO
+					=======================================================================================-->
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><i class="flaticon flaticon-paperclip icon-md"
+									aria-hidden="true"></i>&nbsp;&nbsp;Documentos Pedido</h3>
+						</div>
+						<div class="panel-body">
+							<div class="row" id="divAnexos" style="margin-top:20px;">
+								<div class="col-sm-6" style="margin-top:10px;">		
+									<label>
+										<span class="fluigicon fluigicon-paperclip icon-sm"></span><strong>&nbsp;&nbsp;Descrição do Documento</strong></label>
+									<input type="text" class="form-control" name="descDocTemp" id="descDocTemp" placeholder="Informe uma descrição (mínimo 4 caracteres)" onkeyup="">
+								</div>
+							</div>
+							<div class="row" id="divEscolheDocumento">
+								<div class="col-md-3" id="btnUploadOFF" style="white-space: nowrap;overflow: auto;margin-top:25px;display:none;">		
+									<button type="button" class="btn btn-primary" style="background-color:#bebfbf;border-color:#bebfbf" onclick="emiteAlertaDoc()">Buscar Arquivo</button>
+									
+								</div>
+								<div class="col-md-3" id="btnUpload"  style="white-space: nowrap;overflow: auto;margin-top:25px;">				
+									<a class="file-input-wrapper btn btn-info ">
+										<span><strong>Buscar Arquivo</strong></span>
+										<input 
+											id="fileupload" 
+											type="file" 
+											name="files" 
+											data-url="/ecm/upload"
+											class="btn btn-primary btn-sm btn-block"
+											title="Buscar Arquivo"
+										/>
+									</a>									
+								</div>
+							</div>
+							<div class="row" id="listagemAnexos" style="margin-top:20px;">							
+								<div class="col-sm-12" id="anexosAcao">
+								</div>
+							</div>
+							<div class="row" id="msgErroAnexos" style="display:none;margin-top:10px;margin-bottom:10px;">
+								<div class="col-sm-12">
+									<a name="pontoAnexos" id="pontoAnexos" style=""></a>
+									<div class="alert alert-danger" style="background-color:#ffd9c7;color:#444341;font-size:14px; font-weight:bold;" role="alert">
+										<strong>Atenção: </strong> Necessário anexar documento(s) que comprovem a execução da ação.
+									</div>
+								</div>
+							</div>
+
+							<div class="row" id="divDocumentosCotacao" style="">
+								<input type="hidden" name="diretorioPedido" id="diretorioPedido" class="form-control" >
+
+								<div class="col-sm-12">
+									<table class="table table-bordered" id="docCot" style="margin-bottom:0px;">
+										<thead>
+											<tr>
+												<th class="align-middle custom-th" id="fornec_tr" colspan="4">DOCUMENTOS PEDIDO</th>
+											</tr>
+										</thead>
+									</table>
+									<table class="table table-bordered" id="tbDocumentos">
+										<thead>
+											<tr>
+												<th class="align-middle custom-th" style="vertical-align:middle;width:7%">Nº</th>
+												<th class="align-middle custom-th" style="vertical-align:middle;">Doc Referente a</th>
+												<th class="align-middle custom-th" style="vertical-align:middle;">Nome do Documento</th>
+												<th class="align-middle custom-th" style="vertical-align:middle;">Descrição</th>
+												<th class="align-middle custom-th" style="vertical-align:middle;">Resp. Upload</th>
+												<th class="align-middle custom-th" style="vertical-align:middle;">Data Inserção</th>
+												<th class="align-middle custom-th" style="vertical-align:middle;">Ações</th>
+											</tr>
+										</thead>
+										<tbody id="contentTbDocumentos">
+					
+										</tbody>										
+
+									</table>
+								</div>
+								<a name="pontoTbPedidos" id="pontoTbPedidos" style=""></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+
+</html>
